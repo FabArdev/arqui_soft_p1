@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Sistema de Filas FICCT</title>
+    <link rel="stylesheet" href="../css/global.css">
+</head>
+<body class="full-center-container">
+    <div class="custom-card">
+        <h2 class="text-center">Crear Cuenta</h2>
+        <p class="text-center text-muted-custom">Solo para estudiantes de la FICCT</p>
+        
+        <div id="mensaje-error" class="alert-custom alert-error"></div>
+
+        <form id="registroForm">
+            <div class="form-group">
+                <label class="form-label">Nombre Completo</label>
+                <input type="text" id="nombre" class="form-input" placeholder="Ej. Fabio Arnez" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Registro Universitario</label>
+                <input type="number" id="registro" class="form-input" placeholder="2210XXXXX" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Correo Institucional</label>
+                <input type="email" id="email" class="form-input" placeholder="usuario@uagrm.edu.bo" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Telefono</label>
+                <input type="tel" id="telefono" class="form-input" placeholder="Ej. 7XXXXXXX" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Contraseña</label>
+                <input type="password" id="password" class="form-input" placeholder="********" required>
+            </div>
+            <button type="submit" class="btn-main">Registrarse</button>
+        </form>
+        <p class="text-center text-muted-custom" style="margin-top: 1rem;">
+            ¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a>
+        </p>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        document.getElementById('registroForm').addEventListener('submit', handleRegistro);
+    </script>
+</body>
+</html>

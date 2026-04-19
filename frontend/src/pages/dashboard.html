@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FICCT</title>
+    <link rel="stylesheet" href="../css/global.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-brand">
+            <span class="header-logo">FICCT</span>
+            <span id="welcome-name" class="header-welcome">Cargando...</span>
+        </div>
+        <button class="btn-main btn-danger btn-sm" onclick="logout()">Cerrar sesión</button>
+    </header>
+
+    <main class="dashboard-main">
+
+        <!-- ── VISTA ESTUDIANTE ─────────────────────────────── -->
+        <div id="vista-estudiante" class="custom-card hidden">
+            <h2 class="text-center">Mi Turno</h2>
+            <div id="info-ticket" class="text-center">
+                <!-- Cargado dinámicamente por estudiante.js -->
+            </div>
+        </div>
+
+        <!-- ── VISTA CAJERO ────────────────────────────────── -->
+        <div id="vista-cajero" class="custom-card hidden text-center">
+            <h2>Panel de Cajero</h2>
+            <p class="text-muted-custom" style="margin-bottom: 1rem;">
+                Selecciona tu ventanilla para comenzar a atender:
+            </p>
+            <div class="form-group">
+                <select id="select-ventanilla" class="form-input"></select>
+            </div>
+            <button class="btn-main btn-success" onclick="abrirCaja()">
+                Abrir Ventanilla
+            </button>
+        </div>
+
+        <!-- ── VISTA ADMIN ─────────────────────────────────── -->
+        <!-- CORREGIDO: Antes había dos divs con id="vista-admin" anidados,
+             lo cual es HTML inválido y causaba que JS solo encontrara el primero.
+             Ahora es un único div con dos secciones bien estructuradas. -->
+        <div id="vista-admin" class="hidden admin-container">
+
+            <!-- Sección: Gestión de Usuarios -->
+            <div class="custom-card" style="max-width: 100%;">
+                <div class="section-header">
+                    <h2>Gestión de Usuarios</h2>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Registro</th>
+                                <!-- CORREGIDO: El encabezado decía "Nombf vdjfnvre" -->
+                                <th>Nombre</th>
+                                <th>Rol Actual</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <!-- CORREGIDO: ID único "tabla-usuarios-body" -->
+                        <tbody id="tabla-usuarios-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sección: Gestión de Ventanillas -->
+            <div class="custom-card" style="max-width: 100%;">
+                <div class="section-header">
+                    <h2>Gestión de Ventanillas</h2>
+                    <div style="display:flex; gap: 0.5rem; align-items: center;">
+                        <input type="text" id="nueva-ventanilla-etiqueta"
+                               class="form-input" style="width:auto;"
+                               placeholder="Ej: Caja 1">
+                        <button class="btn-main btn-success btn-sm"
+                                onclick="crearVentanilla()"
+                                style="width:auto; white-space:nowrap;">
+                            + Nueva
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Etiqueta</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <!-- CORREGIDO: ID único "tabla-ventanillas-body" (antes era duplicado) -->
+                        <tbody id="tabla-ventanillas-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div><!-- /vista-admin -->
+
+    </main>
+
+    <!-- Toast de notificación (reemplaza los alert() molestos) -->
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="../lib/qrcode.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/estudiante.js"></script>
+    <script src="../js/cajero.js"></script>
+    <script src="../js/admin.js"></script>
+    <script src="../js/dashboard.js"></script>
+</body>
+</html>

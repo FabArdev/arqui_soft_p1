@@ -1,0 +1,147 @@
+version: '3.8'
+
+services:
+
+  # ─────────────────────────────────────────
+  # BASES DE DATOS
+  # ─────────────────────────────────────────
+
+  db_usuario:
+    image: postgres:15
+    container_name: db_usuario
+    restart: always
+    environment:
+      POSTGRES_DB:       db_usuario
+      POSTGRES_USER:     admin
+      POSTGRES_PASSWORD: admin123
+    volumes:
+      - ./backend/microservios/ms_usuario/db:/var/lib/postgresql/data
+    # CORRECTO: Ya tenía healthcheck
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d db_usuario"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  db_nucleo_fila:
+    image: postgres:15
+    container_name: db_nucleo_fila
+    restart: always
+    environment:
+      POSTGRES_DB:       db_nucleo_fila
+      POSTGRES_USER:     admin
+      POSTGRES_PASSWORD: admin123
+    volumes:
+      - ./backend/microservios/ms_nucleo_fila/db:/var/lib/postgresql/data
+    # CORREGIDO: Se agrega healthcheck. Sin esto, ms_nucleo_fila podía arrancar
+    # antes que la BD estuviera lista, causando errores de conexión al inicio.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d db_nucleo_fila"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  db_ventanilla:
+    image: postgres:15
+    container_name: db_ventanilla
+    restart: always
+    environment:
+      POSTGRES_DB:       db_ventanilla
+      POSTGRES_USER:     admin
+      POSTGRES_PASSWORD: admin123
+    volumes:
+      - ./backend/microservios/ms_ventanilla/db:/var/lib/postgresql/data
+    # CORREGIDO: Igual que db_nucleo_fila, faltaba el healthcheck.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d db_ventanilla"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────
+  # MICROSERVICIOS
+  # ─────────────────────────────────────────
+
+  ms_usuario:
+    build: ./backend/microservios/ms_usuario
+    container_name: ms_usuario
+    ports:
+      - "8001:8001"
+    # CORRECTO: Ya usaba condition: service_healthy
+    depends_on:
+      db_usuario:
+        condition: service_healthy
+    environment:
+      DB_HOST: db_usuario
+      DB_NAME: db_usuario
+      DB_USER: admin
+      DB_PASS: admin123
+
+  ms_nucleo_fila:
+    build: ./backend/microservios/ms_nucleo_fila
+    container_name: ms_nucleo_fila
+    ports:
+      - "8002:8002"
+    # CORREGIDO: Cambiado de depends_on simple a condition: service_healthy
+    # para garantizar que la BD esté aceptando conexiones antes de arrancar el MS.
+    depends_on:
+      db_nucleo_fila:
+        condition: service_healthy
+    environment:
+      DB_HOST: db_nucleo_fila
+      DB_NAME: db_nucleo_fila
+      DB_USER: admin
+      DB_PASS: admin123
+
+  ms_ventanilla:
+    build: ./backend/microservios/ms_ventanilla
+    container_name: ms_ventanilla
+    ports:
+      - "8003:8003"
+    # CORREGIDO: Igual que ms_nucleo_fila.
+    depends_on:
+      db_ventanilla:
+        condition: service_healthy
+    environment:
+      DB_HOST: db_ventanilla
+      DB_NAME: db_ventanilla
+      DB_USER: admin
+      DB_PASS: admin123
+
+  # ─────────────────────────────────────────
+  # API GATEWAY
+  # ─────────────────────────────────────────
+
+  api_gateway:
+    build: ./backend/api_geteway
+    container_name: api_gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - ms_usuario
+      - ms_nucleo_fila
+      - ms_ventanilla
+    environment:
+      MS_USUARIO_URL:    http://ms_usuario:8001
+      MS_FILA_URL:       http://ms_nucleo_fila:8002
+      MS_VENTANILLA_URL: http://ms_ventanilla:8003
+
+  # ─────────────────────────────────────────
+  # FRONTEND
+  # ─────────────────────────────────────────
+
+  frontend:
+    build: ./frontend
+    container_name: sistema_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api_gateway
+
+# ─────────────────────────────────────────
+# RED INTERNA
+# ─────────────────────────────────────────
+
+networks:
+  default:
+    name: ficct_red_verano

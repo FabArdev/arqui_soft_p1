@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atención - FICCT</title>
+    <link rel="stylesheet" href="../css/global.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-brand">
+            <span class="header-logo">FICCT</span>
+            <!-- CORREGIDO: Antes mostraba solo el número. Ahora "Ventanilla 1" es más claro. -->
+            <span id="ventanilla-label" class="header-welcome">Ventanilla —</span>
+        </div>
+        <button class="btn-main btn-danger btn-sm"
+                onclick="cerrarCaja()">
+            Cerrar y salir
+        </button>
+    </header>
+
+    <main class="full-center-container" style="min-height: 80vh; flex-direction: column; gap: 1rem;">
+        <div class="custom-card text-center">
+
+            <!-- Estado actual del turno en atención -->
+            <div id="estado-atencion" class="estado-banner estado-espera">
+                Listo para atender
+            </div>
+
+            <h3 id="estudiante-actual" class="text-muted-custom" style="margin: 1rem 0;">
+                Presiona "Llamar Siguiente" para comenzar.
+            </h3>
+
+            <!-- Escáner QR: oculto hasta que se llame a un estudiante -->
+            <!-- CORREGIDO: El HTML original tenía id="reader" pero cajero.js buscaba
+                 getElementById('reader'). Ahora están alineados. -->
+            <div id="reader" style="display:none; width:100%; margin: 1rem 0;"></div>
+
+            <div class="btn-group-vertical">
+                <button class="btn-main btn-success" onclick="llamarSiguiente()">
+                    ▶ Llamar Siguiente
+                </button>
+                <!-- CORREGIDO: Antes llamaba iniciarEscaner() sin argumentos, pero la
+                     versión nueva requiere que ticketActual ya exista (se llena al llamar).
+                     Este botón ahora sirve para reiniciar el escáner si se cerró accidentalmente. -->
+                <button class="btn-main" onclick="iniciarEscaner()">
+                    📷 Escanear QR del Estudiante
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="../lib/html5-qrcode.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cajero.js"></script>
+    <script>
+        // Mostrar el número de ventanilla en el header
+        const vId = localStorage.getItem('ventanilla_actual');
+        document.getElementById('ventanilla-label').innerText =
+            vId ? `Ventanilla ${vId}` : 'Ventanilla —';
+
+        // Cerrar ventanilla y volver al dashboard
+        async function cerrarCaja() {
+            const vId = localStorage.getItem('ventanilla_actual');
+            const uId = localStorage.getItem('usuario_id');
+            if (vId && uId) {
+                await apiFetch('/ventanilla/cerrar', 'POST', {
+                    ventanilla_id: parseInt(vId),
+                    usuario_id: parseInt(uId)
+                });
+            }
+            localStorage.removeItem('ventanilla_actual');
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>

@@ -13,9 +13,7 @@
 let html5QrCode = null;
 let ticketActual = null;
 
-// ──────────────────────────────────────────────────────────
 // PASO 1: Cargar ventanillas disponibles en dashboard.html
-// ──────────────────────────────────────────────────────────
 
 async function initCajero() {
     const { data, error } = await apiFetch('/ventanilla/disponibles');
@@ -34,10 +32,7 @@ async function initCajero() {
         `<option value="${v.id}">${v.etiqueta}</option>`
     ).join('');
 }
-
-// ──────────────────────────────────────────────────────────
 // PASO 2: Abrir ventanilla
-// ──────────────────────────────────────────────────────────
 
 async function abrirCaja() {
     const vId = document.getElementById('select-ventanilla').value;
@@ -56,9 +51,7 @@ async function abrirCaja() {
     window.location.href = 'atencion.html';
 }
 
-// ──────────────────────────────────────────────────────────
 // PASO 3: Llamar al siguiente estudiante
-// ──────────────────────────────────────────────────────────
 
 async function llamarSiguiente() {
     const vId = localStorage.getItem('ventanilla_actual');
@@ -68,9 +61,6 @@ async function llamarSiguiente() {
 
     await detenerEscaner();
 
-    // Si había un ticket en ATENDIENDO que nunca fue escaneado, expirarlo primero.
-    // Esto ocurre cuando el cajero llama a alguien, esa persona no se presenta,
-    // y el cajero presiona "Llamar Siguiente" de nuevo sin haber completado la atención.
     if (ticketActual) {
         await expirarTicketActual();
     }
@@ -100,9 +90,7 @@ async function llamarSiguiente() {
     iniciarEscaner();
 }
 
-// ──────────────────────────────────────────────────────────
 // Expirar ticket no atendido
-// ──────────────────────────────────────────────────────────
 
 async function expirarTicketActual() {
     if (!ticketActual) return;
@@ -113,9 +101,7 @@ async function expirarTicketActual() {
     ticketActual = null;
 }
 
-// ──────────────────────────────────────────────────────────
 // PASO 4: Iniciar escáner de cámara
-// ──────────────────────────────────────────────────────────
 
 async function iniciarEscaner() {
     if (!ticketActual) return showToast('Primero llama a un estudiante.', 'error');
@@ -143,9 +129,7 @@ async function iniciarEscaner() {
     }
 }
 
-// ──────────────────────────────────────────────────────────
 // Detener escáner de forma segura
-// ──────────────────────────────────────────────────────────
 
 async function detenerEscaner() {
     if (html5QrCode) {
@@ -157,10 +141,7 @@ async function detenerEscaner() {
     const contenedor = document.getElementById('reader');
     if (contenedor) contenedor.style.display = 'none';
 }
-
-// ──────────────────────────────────────────────────────────
 // PASO 5: Validar QR leído
-// ──────────────────────────────────────────────────────────
 
 async function validarQR(codigoLeido) {
     const vId = localStorage.getItem('ventanilla_actual');
@@ -181,10 +162,7 @@ async function validarQR(codigoLeido) {
     showToast('Identidad verificada.', 'success');
     await completarAtencion();
 }
-
-// ──────────────────────────────────────────────────────────
 // PASO 6: Completar atención (estado final)
-// ──────────────────────────────────────────────────────────
 
 async function completarAtencion() {
     if (!ticketActual) return;
@@ -194,9 +172,7 @@ async function completarAtencion() {
     setTextoEstudiante('Listo. Presiona "Llamar Siguiente" para continuar.');
 }
 
-// ──────────────────────────────────────────────────────────
 // Utilidades visuales
-// ──────────────────────────────────────────────────────────
 
 function setTextoEstudiante(texto) {
     const el = document.getElementById('estudiante-actual');

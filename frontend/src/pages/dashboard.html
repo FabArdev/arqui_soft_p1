@@ -21,7 +21,6 @@
         <div id="vista-estudiante" class="custom-card hidden">
             <h2 class="text-center">Mi Turno</h2>
             <div id="info-ticket" class="text-center">
-                <!-- Cargado dinámicamente por estudiante.js -->
             </div>
         </div>
 
@@ -40,9 +39,7 @@
         </div>
 
         <!-- ── VISTA ADMIN ─────────────────────────────────── -->
-        <!-- CORREGIDO: Antes había dos divs con id="vista-admin" anidados,
-             lo cual es HTML inválido y causaba que JS solo encontrara el primero.
-             Ahora es un único div con dos secciones bien estructuradas. -->
+
         <div id="vista-admin" class="hidden admin-container">
 
             <!-- Sección: Gestión de Usuarios -->
@@ -55,13 +52,11 @@
                         <thead>
                             <tr>
                                 <th>Registro</th>
-                                <!-- CORREGIDO: El encabezado decía "Nombf vdjfnvre" -->
                                 <th>Nombre</th>
                                 <th>Rol Actual</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <!-- CORREGIDO: ID único "tabla-usuarios-body" -->
                         <tbody id="tabla-usuarios-body"></tbody>
                     </table>
                 </div>
@@ -92,17 +87,16 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <!-- CORREGIDO: ID único "tabla-ventanillas-body" (antes era duplicado) -->
                         <tbody id="tabla-ventanillas-body"></tbody>
                     </table>
                 </div>
             </div>
 
-        </div><!-- /vista-admin -->
+        </div>
 
     </main>
 
-    <!-- Toast de notificación (reemplaza los alert() molestos) -->
+
     <div id="toast" class="toast hidden"></div>
 
     <script src="../lib/qrcode.min.js"></script>

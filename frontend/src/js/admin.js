@@ -66,7 +66,6 @@ async function ascenderCajero(id) {
 }
 
 async function eliminarUsuario(id, nombre) {
-    // ANTES: esta función no existía, el botón tiraba error en consola
     if (!confirm(`¿Seguro que deseas dar de baja a "${nombre}"? Esta acción es irreversible.`)) return;
 
     const { error } = await apiFetch(`/usuario/usuarios/${id}`, 'DELETE');
@@ -80,11 +79,10 @@ async function eliminarUsuario(id, nombre) {
 // ──────────────────────────────────────────────────────────
 
 async function cargarVentanillas() {
-    // ANTES: esta función era llamada en initAdmin() pero nunca estaba implementada
     const { data, error } = await apiFetch('/ventanilla/listar');
     const tbody = document.getElementById('tabla-ventanillas-body');
 
-    if (!tbody) return; // No está en esta página
+    if (!tbody) return;
 
     if (error || !data || !data.ventanillas) {
         tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted-custom">Error al cargar ventanillas.</td></tr>`;
@@ -112,7 +110,6 @@ async function cargarVentanillas() {
 }
 
 async function crearVentanilla() {
-    // ANTES: esta función no existía. El botón "+ Nueva" del dashboard la llama.
     const input = document.getElementById('nueva-ventanilla-etiqueta');
     const etiqueta = input ? input.value.trim() : '';
 
@@ -136,13 +133,10 @@ async function eliminarVentanilla(id, etiqueta) {
     cargarVentanillas();
 }
 
-// ──────────────────────────────────────────────────────────
 // UTILIDAD: Toast (reemplaza los alert() del navegador)
-// ──────────────────────────────────────────────────────────
 
 function showToast(mensaje, tipo = 'success') {
     const toast = document.getElementById('toast');
-    if (!toast) return; // Si no existe el elemento, usar alert como fallback
     toast.textContent = mensaje;
     toast.className = `toast toast-${tipo}`;
     toast.classList.remove('hidden');

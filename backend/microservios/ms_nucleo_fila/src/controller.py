@@ -26,7 +26,7 @@ def handle_ver_estado(est_id):
         return {"mensaje": "Sin tickets activos"}, 200
 
     delante = db.contar_delante(ticket['posicion'])
-    tiempo = delante * 2.5  # Minutos estimados por persona
+    tiempo = delante * 2.5 
 
     return {
         "ticket": ticket,

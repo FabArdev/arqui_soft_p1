@@ -10,7 +10,6 @@
     <header class="app-header">
         <div class="header-brand">
             <span class="header-logo">FICCT</span>
-            <!-- CORREGIDO: Antes mostraba solo el número. Ahora "Ventanilla 1" es más claro. -->
             <span id="ventanilla-label" class="header-welcome">Ventanilla —</span>
         </div>
         <button class="btn-main btn-danger btn-sm"
@@ -22,7 +21,6 @@
     <main class="full-center-container" style="min-height: 80vh; flex-direction: column; gap: 1rem;">
         <div class="custom-card text-center">
 
-            <!-- Estado actual del turno en atención -->
             <div id="estado-atencion" class="estado-banner estado-espera">
                 Listo para atender
             </div>
@@ -32,17 +30,12 @@
             </h3>
 
             <!-- Escáner QR: oculto hasta que se llame a un estudiante -->
-            <!-- CORREGIDO: El HTML original tenía id="reader" pero cajero.js buscaba
-                 getElementById('reader'). Ahora están alineados. -->
             <div id="reader" style="display:none; width:100%; margin: 1rem 0;"></div>
 
             <div class="btn-group-vertical">
                 <button class="btn-main btn-success" onclick="llamarSiguiente()">
                     ▶ Llamar Siguiente
                 </button>
-                <!-- CORREGIDO: Antes llamaba iniciarEscaner() sin argumentos, pero la
-                     versión nueva requiere que ticketActual ya exista (se llena al llamar).
-                     Este botón ahora sirve para reiniciar el escáner si se cerró accidentalmente. -->
                 <button class="btn-main" onclick="iniciarEscaner()">
                     📷 Escanear QR del Estudiante
                 </button>

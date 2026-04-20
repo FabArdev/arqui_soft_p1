@@ -29,7 +29,7 @@ RUTAS_PERMITIDAS = {
         "/usuario/registro",
         "/usuario/login",
         "/fila/tomar_ticket",
-        "/fila/estado/",      # GET con ID al final
+        "/fila/estado/",     
     ],
     # rol_id 2 - Cajero: gestiona la fila y su ventanilla
     2: [
@@ -58,7 +58,7 @@ def rol_puede_acceder(rol_id, path):
 
     rutas = RUTAS_PERMITIDAS.get(rol_id, [])
     if rutas is None:
-        return True  # Acceso total
+        return True 
 
     # Verificar si la ruta comienza con alguno de los prefijos permitidos
     return any(path.startswith(ruta) for ruta in rutas)
@@ -82,14 +82,12 @@ class GatewayHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_OPTIONS(self):
-        # Preflight CORS: responder siempre con 200
         self.enviar_json({}, 200)
 
     def proxy_request(self, method):
         # ── 1. Parsear prefijo y ruta interna ─────────────────────────────
-        # Separar query string del path para no corromper la ruta
         path_sin_query = self.path.split('?')[0]
-        query_string   = self.path[len(path_sin_query):]  # Incluye el '?' si existe
+        query_string   = self.path[len(path_sin_query):] 
 
         partes = path_sin_query.split('/')
         if len(partes) < 2:
@@ -102,8 +100,6 @@ class GatewayHandler(http.server.BaseHTTPRequestHandler):
             return self.enviar_json({"error": f"Microservicio '{prefijo}' no encontrado"}, 404)
 
         # ── 2. Verificar RBAC ────────────────────────────────────────────
-        # CORREGIDO: El default era '1' (estudiante), lo cual es correcto como
-        # fallback seguro. Se amplió la verificación para cubrir rutas de cajero.
         try:
             rol_id = int(self.headers.get('X-Rol-Id', '1'))
         except ValueError:
@@ -117,8 +113,6 @@ class GatewayHandler(http.server.BaseHTTPRequestHandler):
             )
 
         # ── 3. Leer body de forma robusta ────────────────────────────────
-        # CORREGIDO: Si Content-Length no está presente o está mal formado,
-        # no intentamos leer el body para evitar bloqueos en self.rfile.
         body = None
         raw_length = self.headers.get('Content-Length')
         if raw_length:
@@ -126,8 +120,6 @@ class GatewayHandler(http.server.BaseHTTPRequestHandler):
                 content_length = int(raw_length)
                 if content_length > 0:
                     body = self.rfile.read(content_length)
-                    # Validar que el body sea JSON válido antes de forwarding
-                    # Esto evita que errores del cliente generen errores confusos en los MS
                     if body and self.headers.get('Content-Type', '').startswith('application/json'):
                         try:
                             json.loads(body.decode('utf-8'))

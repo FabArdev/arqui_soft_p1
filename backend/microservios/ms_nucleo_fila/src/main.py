@@ -25,7 +25,6 @@ class FilaHandler(http.server.BaseHTTPRequestHandler):
             if length:
                 raw = self.rfile.read(int(length))
             else:
-                # Sin Content-Length: no leemos para evitar bloqueos
                 raw = b''
             return json.loads(raw) if raw else {}
         except (ValueError, json.JSONDecodeError) as e:
@@ -42,11 +41,9 @@ class FilaHandler(http.server.BaseHTTPRequestHandler):
             elif self.path == '/llamar_siguiente':
                 res, s = controller.handle_llamar(data)
 
-            # ─── RUTA ANTES FALTANTE: Validar QR escaneado por el cajero ───
             elif self.path == '/validar_qr':
                 res, s = controller.handle_validar_qr(data)
 
-            # ─── RUTA NUEVA: Marcar atención como completada ───────────────
             elif self.path == '/completar_atencion':
                 res, s = controller.handle_completar(data)
 

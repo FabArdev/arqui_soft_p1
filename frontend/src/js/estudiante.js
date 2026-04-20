@@ -15,7 +15,6 @@ async function pedirTicket() {
         registro: parseInt(registro)
     });
 
-    // CORREGIDO: reemplazados los alert() nativos por showToast()
     if (error) return showToast(error, 'error');
 
     showToast('¡Ticket obtenido con éxito!', 'success');
@@ -25,14 +24,12 @@ async function pedirTicket() {
 async function actualizarEstadoTicket() {
     const estId = localStorage.getItem('usuario_id');
 
-    // CORREGIDO: guard para evitar GET /fila/estado/null
     if (!estId) return;
 
     const { data, error } = await apiFetch(`/fila/estado/${estId}`);
     const container = document.getElementById('info-ticket');
     if (!container) return;
 
-    // Sin ticket activo: mostrar botón para sacar uno
     if (error || data.mensaje === 'Sin tickets activos') {
         container.innerHTML = `
             <p class="text-muted-custom" style="margin-bottom:1rem;">No tienes turnos pendientes.</p>

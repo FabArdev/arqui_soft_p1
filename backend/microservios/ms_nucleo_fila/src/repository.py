@@ -109,7 +109,6 @@ class FilaRepository:
     def llamar_siguiente(self, ventanilla_id, cajero_id):
         conn = self.get_connection()
         cur = conn.cursor()
-        # Tomar el ticket con menor posición que aún esté esperando hoy
         cur.execute("""
             SELECT id FROM ticket
             WHERE estado = 'ESPERANDO'

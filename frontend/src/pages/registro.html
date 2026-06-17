@@ -10,7 +10,7 @@
     <div class="custom-card">
         <h2 class="text-center">Crear Cuenta</h2>
         <p class="text-center text-muted-custom">Solo para estudiantes de la FICCT</p>
-        
+
         <div id="mensaje-error" class="alert-custom alert-error"></div>
 
         <form id="registroForm">
@@ -36,6 +36,34 @@
             </div>
             <button type="submit" class="btn-main">Registrarse</button>
         </form>
+
+        <!-- ── Chain of Responsibility — Visualización ─────────── -->
+        <div id="cor-chain" class="cor-chain hidden">
+            <div class="cor-chain-title">Chain of Responsibility — Validación</div>
+            <div class="cor-nodes">
+                <div class="cor-node">
+                    <div class="cor-circle" id="cc-campos"></div>
+                    <span>Campos</span>
+                </div>
+                <div class="cor-connector" id="cl-1"></div>
+                <div class="cor-node">
+                    <div class="cor-circle" id="cc-email"></div>
+                    <span>Email</span>
+                </div>
+                <div class="cor-connector" id="cl-2"></div>
+                <div class="cor-node">
+                    <div class="cor-circle" id="cc-registro"></div>
+                    <span>Registro</span>
+                </div>
+                <div class="cor-connector" id="cl-3"></div>
+                <div class="cor-node">
+                    <div class="cor-circle" id="cc-crear"></div>
+                    <span>Crear</span>
+                </div>
+            </div>
+        </div>
+        <!-- ──────────────────────────────────────────────────────── -->
+
         <p class="text-center text-muted-custom" style="margin-top: 1rem;">
             ¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a>
         </p>

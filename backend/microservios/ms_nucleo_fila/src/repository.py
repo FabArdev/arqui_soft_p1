@@ -194,6 +194,79 @@ class FilaRepository:
         conn.close()
         return affected
 
+    def obtener_siguiente_esperando(self):
+        conn = self.get_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT id, posicion, estado, codigo_qr
+            FROM ticket
+            WHERE estado = 'ESPERANDO'
+              AND fecha_creacion::date = CURRENT_DATE
+            ORDER BY posicion ASC
+            LIMIT 1;
+        """)
+        res = cur.fetchone()
+        cur.close()
+        conn.close()
+        if res:
+            return {"id": res[0], "posicion": res[1], "estado": res[2], "codigo_qr": res[3]}
+        return None
+
+    def transicionar_a_atendiendo(self, ticket_id, ventanilla_id, cajero_id):
+        conn = self.get_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE ticket
+            SET estado        = 'ATENDIENDO',
+                ventanilla_id = %s,
+                cajero_id     = %s
+            WHERE id = %s AND estado = 'ESPERANDO'
+            RETURNING id, registro_estudiante, codigo_qr, posicion;
+        """, (ventanilla_id, cajero_id, ticket_id))
+        datos = cur.fetchone()
+        conn.commit()
+        cur.close()
+        conn.close()
+        if datos:
+            return {"id": datos[0], "registro": datos[1], "qr": datos[2], "posicion": datos[3]}
+        return None
+
+    def obtener_ticket_por_id(self, ticket_id):
+        conn = self.get_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT id, posicion, estado, codigo_qr, ventanilla_id, cajero_id
+            FROM ticket WHERE id = %s;
+        """, (ticket_id,))
+        res = cur.fetchone()
+        cur.close()
+        conn.close()
+        if res:
+            return {
+                "id": res[0], "posicion": res[1], "estado": res[2],
+                "codigo_qr": res[3], "ventanilla_id": res[4], "cajero_id": res[5]
+            }
+        return None
+
+    def obtener_ticket_atendiendo_ventanilla(self, ventanilla_id):
+        conn = self.get_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT id, posicion, estado, codigo_qr, ventanilla_id
+            FROM ticket
+            WHERE ventanilla_id = %s AND estado = 'ATENDIENDO'
+            LIMIT 1;
+        """, (ventanilla_id,))
+        res = cur.fetchone()
+        cur.close()
+        conn.close()
+        if res:
+            return {
+                "id": res[0], "posicion": res[1], "estado": res[2],
+                "codigo_qr": res[3], "ventanilla_id": res[4]
+            }
+        return None
+
     def completar_atencion(self, ticket_id):
         """
         NUEVO MÉTODO: Transiciona el ticket de ATENDIENDO → ATENDIDO.

@@ -260,6 +260,195 @@ tr:hover td      { background-color: #f1f4f8; }
     justify-content: center;
 }
 
+/* ─── CHAIN OF RESPONSIBILITY — Visual CU-01 ────────────── */
+.cor-chain {
+    margin-top: 1.5rem;
+    padding: 1.25rem 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+}
+
+.cor-chain-title {
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+}
+
+.cor-nodes {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.cor-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.cor-node span {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.cor-circle {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 3px solid #dee2e6;
+    background: #e9ecef;
+    position: relative;
+    transition: all 0.35s ease;
+}
+
+.cor-circle.pending {
+    animation: pulse-gray 1.4s ease-in-out infinite;
+}
+
+.cor-circle.success {
+    border-color: var(--success-color);
+    background: #d4edda;
+    animation: pop 0.3s ease;
+}
+.cor-circle.success::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--success-color);
+    font-size: 1.3rem;
+    font-weight: 900;
+    line-height: 43px;
+    text-align: center;
+}
+
+.cor-circle.error {
+    border-color: var(--danger-color);
+    background: #f8d7da;
+    animation: shake 0.4s ease;
+}
+.cor-circle.error::after {
+    content: '✗';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--danger-color);
+    font-size: 1.3rem;
+    font-weight: 900;
+    line-height: 43px;
+    text-align: center;
+}
+
+.cor-connector {
+    width: 28px;
+    height: 3px;
+    background: #dee2e6;
+    margin-top: 21px;
+    flex-shrink: 0;
+    transition: background 0.35s ease;
+}
+.cor-connector.passed { background: var(--success-color); }
+.cor-connector.failed { background: var(--danger-color); }
+
+@keyframes pulse-gray {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(108,117,125,0.35); }
+    50%       { box-shadow: 0 0 0 7px rgba(108,117,125,0); }
+}
+@keyframes pop {
+    0%   { transform: scale(0.85); }
+    60%  { transform: scale(1.12); }
+    100% { transform: scale(1); }
+}
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%       { transform: translateX(-4px); }
+    75%       { transform: translateX(4px); }
+}
+
+/* ─── STATE PATTERN — Visual CU-06 ──────────────────────── */
+.sm-container {
+    margin: 1.25rem 0 0.5rem;
+    padding: 0.9rem 0.75rem 0.75rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+}
+
+.sm-title {
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.65rem;
+}
+
+.sm-diagram {
+    display: grid;
+    grid-template-columns: auto 1.2rem auto 1.2rem auto;
+    grid-template-rows: auto 0.6rem auto;
+    align-items: center;
+    justify-items: center;
+    gap: 0.15rem 0;
+}
+
+.sm-node {
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #e9ecef;
+    color: #adb5bd;
+    border: 2px solid transparent;
+    transition: all 0.45s ease;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+}
+
+.sm-arrow-h { color: #ced4da; font-size: 0.95rem; font-weight: 900; }
+.sm-arrow-v { color: #ced4da; font-size: 0.95rem; font-weight: 900; grid-column: 3; }
+.sm-empty   { visibility: hidden; width: 4px; }
+
+.sm-node.sm-esperando {
+    background: #fff3cd; color: #856404;
+    border-color: #ffc107;
+    box-shadow: 0 0 14px rgba(255,193,7,0.55);
+    animation: pulse-node 1.6s ease-in-out infinite;
+}
+.sm-node.sm-atendiendo {
+    background: #cce5ff; color: #004085;
+    border-color: #0066cc;
+    box-shadow: 0 0 14px rgba(0,102,204,0.55);
+    animation: pulse-node 1.6s ease-in-out infinite;
+}
+.sm-node.sm-atendido {
+    background: #d4edda; color: #155724;
+    border-color: var(--success-color);
+    box-shadow: 0 0 10px rgba(40,167,69,0.35);
+}
+.sm-node.sm-expirado {
+    background: #f8d7da; color: #721c24;
+    border-color: var(--danger-color);
+    box-shadow: 0 0 10px rgba(220,53,69,0.35);
+}
+
+@keyframes pulse-node {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.06); }
+}
+
 /* ─── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width: 600px) {
     .custom-card   { padding: 1.25rem; }

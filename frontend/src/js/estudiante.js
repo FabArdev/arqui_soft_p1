@@ -7,12 +7,12 @@ async function initEstudiante() {
 }
 
 async function pedirTicket() {
-    const estId = localStorage.getItem('usuario_id');
+    const estId    = localStorage.getItem('usuario_id');
     const registro = localStorage.getItem('registro');
 
     const { data, error } = await apiFetch('/fila/tomar_ticket', 'POST', {
         estudiante_id: parseInt(estId),
-        registro: parseInt(registro)
+        registro:      parseInt(registro)
     });
 
     if (error) return showToast(error, 'error');
@@ -21,9 +21,36 @@ async function pedirTicket() {
     actualizarEstadoTicket();
 }
 
+// Genera el HTML del diagrama de estados (Patrón State)
+function _smDiagram(estadoActual) {
+    const cls = (e) => estadoActual === e ? `sm-node sm-${e.toLowerCase()}` : 'sm-node';
+    return `
+        <div class="sm-container">
+            <div class="sm-title">Patrón State — Ciclo de vida del ticket</div>
+            <div class="sm-diagram">
+                <div class="${cls('ESPERANDO')}">ESPERANDO</div>
+                <div class="sm-arrow-h">→</div>
+                <div class="${cls('ATENDIENDO')}">ATENDIENDO</div>
+                <div class="sm-arrow-h">→</div>
+                <div class="${cls('ATENDIDO')}">ATENDIDO ✓</div>
+
+                <div class="sm-empty"></div>
+                <div class="sm-empty"></div>
+                <div class="sm-arrow-v">↓</div>
+                <div class="sm-empty"></div>
+                <div class="sm-empty"></div>
+
+                <div class="sm-empty"></div>
+                <div class="sm-empty"></div>
+                <div class="${cls('EXPIRADO')}">EXPIRADO ✗</div>
+                <div class="sm-empty"></div>
+                <div class="sm-empty"></div>
+            </div>
+        </div>`;
+}
+
 async function actualizarEstadoTicket() {
     const estId = localStorage.getItem('usuario_id');
-
     if (!estId) return;
 
     const { data, error } = await apiFetch(`/fila/estado/${estId}`);
@@ -39,15 +66,9 @@ async function actualizarEstadoTicket() {
 
     const t = data.ticket;
 
-    // ── ESTADO EXPIRADO ──────────────────────────────────────────────────────
-    // El cajero llamó al estudiante pero no se presentó a tiempo.
-    // El QR fue invalidado. Debe sacar un nuevo turno.
+    // ── ESTADO EXPIRADO ──────────────────────────────────────────
     if (t.estado === 'EXPIRADO') {
-        // Detener el polling: ya no hay nada que actualizar para este ticket
-        if (intervalEstado) {
-            clearInterval(intervalEstado);
-            intervalEstado = null;
-        }
+        if (intervalEstado) { clearInterval(intervalEstado); intervalEstado = null; }
         container.innerHTML = `
             <div class="text-center">
                 <div class="estado-banner estado-expirado" style="margin-bottom:1rem;">
@@ -55,13 +76,13 @@ async function actualizarEstadoTicket() {
                 </div>
                 <p style="margin-bottom:0.5rem;">Fuiste llamado a la ventanilla pero no te presentaste a tiempo.</p>
                 <p class="text-muted-custom" style="margin-bottom:1.5rem;">Tu QR ya no es válido. Debes sacar un nuevo turno.</p>
-                <button class="btn-main btn-success" onclick="pedirTicket()">Sacar Nuevo Ticket</button>
+                ${_smDiagram('EXPIRADO')}
+                <button class="btn-main btn-success" style="margin-top:1rem;" onclick="pedirTicket()">Sacar Nuevo Ticket</button>
             </div>`;
         return;
     }
-    // ────────────────────────────────────────────────────────────────────────
 
-    // Badge de color según estado
+    // ── ESTADOS NORMALES ─────────────────────────────────────────
     const badgeClass = t.estado === 'ATENDIENDO' ? 'badge-active' : 'badge-waiting';
 
     container.innerHTML = `
@@ -74,9 +95,9 @@ async function actualizarEstadoTicket() {
             ${t.estado === 'ATENDIENDO'
                 ? '<p style="color:var(--danger-color);font-weight:600;font-size:1.1rem;margin-top:1rem;">¡DIRÍGETE A LA VENTANILLA AHORA!</p>'
                 : ''}
+            ${_smDiagram(t.estado)}
         </div>`;
 
-    // Generar imagen QR solo si el código existe (ATENDIENDO con QR válido o ESPERANDO)
     if (t.codigo_qr) {
         new QRCode(document.getElementById('qrcode'), {
             text: t.codigo_qr,

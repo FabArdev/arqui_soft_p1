@@ -172,3 +172,16 @@ class UsuarioRepository:
         finally:
             cur.close()
             conn.close()
+
+    def existe_registro(self, registro):
+        conn = self.get_connection()
+        cur = conn.cursor()
+        try:
+            cur.execute("SELECT id FROM usuario WHERE registro = %s;", (registro,))
+            return cur.fetchone() is not None
+        except Exception as e:
+            print(f"Error en existe_registro: {e}")
+            return False
+        finally:
+            cur.close()
+            conn.close()
